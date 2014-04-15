@@ -63,6 +63,7 @@ Levels.test4 = MakeLevel
 	}
 }
 
+
 -- stores all levels in ordered table so that one can be selected randomly by index
 Levels.levels = 
 {
@@ -74,6 +75,11 @@ Levels.levels =
 
 function Levels:GetRandomLevel()
 	return self.levels[math.random(#Levels.levels)]
+end
+
+Levels.notPlayedYet = {}
+function Levels:GetRandomLevelUnique()
+
 end
 
 Levels.currentLevel = Levels:GetRandomLevel()
