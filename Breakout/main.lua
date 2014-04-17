@@ -12,7 +12,6 @@ local paddle = require("Paddle")
 local ball = require("Ball")
 local Bricks = require("Brick")
 require("Wall")
-require("Brick")
 
 
 local function Update(event)
