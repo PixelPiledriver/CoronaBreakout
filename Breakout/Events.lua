@@ -13,7 +13,7 @@ local function CreateEvent(e)
 	}
 
 	function event:Dispatch()
-		Runtime:dispatchEvent( self)
+		Runtime:dispatchEvent( self )
 	end
 
 	function event:AddObject(obj)
