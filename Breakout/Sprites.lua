@@ -1,3 +1,11 @@
+
+local Sprites = {}
+
+
+----------------
+-- Functions
+----------------
+
 -- returns a table to be used as frame data for 'complex' spritesheet
 local function MakeFrame(_x, _y, _width, _height)
 	local frame =
@@ -11,6 +19,35 @@ local function MakeFrame(_x, _y, _width, _height)
 	return frame
 end
 
+
+
+-- returns frame data table made from Sprites structure
+local frameIndex = 0
+local function MakeFrameFromData(data)
+	local frame =
+	{
+		x = data.x or 0
+		y = data.y or 0
+		width = data.width or 8,
+		height = data.height or 8
+	}
+
+
+
+end 
+
+
+---------------------
+-- Create Frames
+---------------------
+
+-- sprite data
+Sprites.paddle = {}
+Sprites.paddle.data = {x=}
+
+
+
+-- frames
 local sheetFrames = 
 {
 	-- paddle = 1
@@ -41,4 +78,6 @@ local spriteSheet = graphics.newImageSheet( "breakoutGraphics.png", sheetOptions
 
 
 
-return spriteSheet
+
+
+return Sprites
