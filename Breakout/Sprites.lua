@@ -23,17 +23,19 @@ end
 
 -- returns frame data table made from Sprites structure
 local frameIndex = 0
-local function MakeFrameFromData(data)
+local function MakeFrameFromData(t)
 	local frame =
 	{
-		x = data.x or 0
-		y = data.y or 0
-		width = data.width or 8,
-		height = data.height or 8
+		x = t.data.x or 0,
+		y = t.data.y or 0,
+		width = t.data.width or 8,
+		height = t.data.height or 8
 	}
 
+	t.frame = frameIndex
+	frameIndex = 0
 
-
+	return frame
 end 
 
 
@@ -41,13 +43,33 @@ end
 -- Create Frames
 ---------------------
 
+
 -- sprite data
-Sprites.paddle = {}
-Sprites.paddle.data = {x=}
-
-
+Sprites.paddle = { data = {x=0, y=0, width=64, height=16} }
+Sprites.ball = { data = {x=64, y=0, width=16, height=16} }
+Sprites.brick = { data = {x=0, y=16, width=32, height=16} }
+Sprites.rubble1 = { data = {x=32, y=16, width=8, width=8} }
+Sprites.wall = { data = {x=72, y=24, width=8, height=8} }
+Sprites.ceiling = { data = {x=64, y=24, width=8, height=8} }
+	
 
 -- frames
+
+local sheetFrames =
+{
+	MakeFrameFromData(Sprites.paddle),
+	MakeFrameFromData(Sprites.ball),
+	MakeFrameFromData(Sprites.brick),
+	MakeFrameFromData(Sprites.rubble1),
+	MakeFrameFromData(Sprites.wall),
+	MakeFrameFromData(Sprites.ceiling)
+}
+
+print(Sprites.ball.frame)
+
+
+
+--[[
 local sheetFrames = 
 {
 	-- paddle = 1
@@ -68,6 +90,7 @@ local sheetFrames =
 	-- ceiling = 6
 	MakeFrame(64,24,8,8)
 }
+--]]
 
 local sheetOptions =
 {
@@ -75,8 +98,6 @@ local sheetOptions =
 }
 
 local spriteSheet = graphics.newImageSheet( "breakoutGraphics.png", sheetOptions)
-
-
 
 
 
