@@ -2,17 +2,17 @@
 local physics = require("physics")
 
 -- sprite
-local spriteSheet = require("SpriteSheet")
+local Sprites = require("Sprites")
 local wallSprite =
 {
 	name = "idle",
-	frames = {5}
+	frames = {Sprites.wall}
 }
 
 local ceilingSprite =
 {
 	name = "idle",
-	frames = {6}
+	frames = {Sprites.ceiling}
 }
 
 local spriteData
@@ -27,7 +27,7 @@ local function CreateWall(data)
 		spriteData = ceilingSprite
 	end
 
-	local obj = display.newSprite( spriteSheet, spriteData )
+	local obj = display.newSprite( Sprites.spriteSheet, spriteData )
 	obj.name = name
 	obj.anchorX = 0
 	obj.anchorY = 0

@@ -4,18 +4,18 @@
 -----------------------------------------
 local physics = require("physics")
 
--- get the spriteSheet --> contains art for all objects
-local spriteSheet = require("SpriteSheet")
+-- get the Sprites --> contains art for all objects
+local Sprites = require("Sprites")
 
 -- choose paddle sprite
 local spriteData = 
 {
 	name = "idle",
-	frames = {1},
+	frames = {Sprites.paddle},
 }
 
 -- create object
-local paddle = display.newSprite( spriteSheet, spriteData )
+local paddle = display.newSprite( Sprites.spriteSheet, spriteData )
 
 -- set physics
 physics.addBody( paddle, "static", {friction=0.5, bounce=1})

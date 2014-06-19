@@ -4,21 +4,32 @@ local Events = require("Events")
 local Levels = require("Levels")
 local sound = require("Sound")
 local physics = require("physics")
-local spriteSheet = require("SpriteSheet")
+local Sprites = require("Sprites")
+local Func = require("Func")
+
+
 local spriteData = 
 {
 	name = "idle",
-	frames = {3}
+	frames = {Sprites.brick}
 }
 
 -- get size from temp object for later use
-local tempBrick = display.newSprite( spriteSheet, spriteData )
-local brickSize = 
+local tempBrick = display.newSprite( Sprites.spriteSheet, spriteData )
+local brickSize =
 {
 	width = tempBrick.width, 
 	height = tempBrick.height
 }
 tempBrick:removeSelf( )
+
+
+-- rubble
+local rubbleSpriteData =
+{
+	name = "idle",
+	frames = {Sprites.rubble1}
+}
 
 ---------------------------------------------------
 -- Level
@@ -27,31 +38,124 @@ tempBrick:removeSelf( )
 local totalBricks = 7  			-- starting number of bricks
 local columns = 7					  -- how many bricks wide
 local totalBricksBroken = 0 -- used to track when level is complete
+local totalBricksAtStart = 0
 
 -- contains all brick objects
 local bricks = {}
 
+local rubble = {}
+
+local makeRubbleLater = {}
+
+
+local function PrintBricks()
+	for i=1, #bricks do
+		print(bricks[i])
+	end 
+end 
+
+local function CreateBrickRubble()
+
+	if(#makeRubbleLater == 0) then
+		return
+	end 
+
+	local rubbleCount = 3
+
+	for i=1, #makeRubbleLater do
+
+		for c=1, rubbleCount do
+
+
+
+			local obj = display.newSprite(Sprites.spriteSheet, rubbleSpriteData)
+
+			obj.x = makeRubbleLater[i].x + makeRubbleLater[i].width * 0.5
+			obj.y = makeRubbleLater[i].y + makeRubbleLater[i].height * 0.5
+
+			physics.addBody( obj, {friction=0.2, bounce=0.5} )
+
+			local velocity = {}
+			local v = 1000
+			velocity.x = math.random(-v, v)
+			velocity.x = velocity.x * 0.1
+
+			velocity.y = math.random(-v, v)
+			velocity.y = velocity.y * 0.1
+
+			obj:setLinearVelocity(velocity.x, velocity.y)
+
+		end 
+
+	end 
+
+	makeRubbleLater = {}
+
+end 
+
 -- create a single brick object
 local function CreateBrick(data)
-	local obj = display.newSprite( spriteSheet, spriteData )
+
+	-- random brick sprite
+	spriteData.frames = { Func:ChooseRandomlyFrom{Sprites.brick, Sprites.brick2, Sprites.brick3} }
+
+
+	local obj = display.newSprite( Sprites.spriteSheet, spriteData )
 
 	obj.name = "brick"
 	obj.x = data.x or display.contentCenterX
 	obj.y = data.y or 200
 	obj.anchorX = 0
 	obj.anchorY = 0
+	obj.brickType = data.brickType or 1
+	obj.index = data.index
+
+	-----------------
+	-- Functions
+	-----------------
+
+	
 
 	function obj:Break()
+	
 		totalBricksBroken =  totalBricksBroken + 1
-		print("Bricks: " .. totalBricks - totalBricksBroken)
+
+		bricks[self.index] = nil
+
 		obj:removeSelf( )
 
 		-- play sound
 		sound.play(sound.breakBrick)
 
+		-- create rubble
+		makeRubbleLater[#makeRubbleLater + 1] = 
+		{
+			x = self.x, 
+			y = self.y,
+			width = self.width,
+			height = self.height
+		}
+
 	end
 
-	physics.addBody( obj, "static", {friction=0.5, bounce=1} )
+	function obj:Update()
+		if(self == nil) then
+			return
+		end 
+
+		if(self.y > display.contentHeight - 20) then
+			obj:Break()
+		end 
+	end 
+
+
+	-- brick type determines physics type -- for now
+	-- need to make a table of brick types --> :P
+	if(obj.brickType == 1) then
+		physics.addBody( obj, "static", {friction=0.5, bounce=0.5} )
+	elseif(obj.brickType == 2) then
+		physics.addBody( obj, {friction=0.2, bounce=0.5, density = 1} )
+	end 
 
 	return obj
 end
@@ -80,14 +184,17 @@ local currentLevel = testLevel
 -- this allows for levels to be designed
 local function CreateBricksFromTable(level)
 
+	totalBricksAtStart = 0
 	local activeBricksCount = 0
 
 	---[[
 	for yi=1, #level.bricks do
 		for xi=1, #level.bricks[yi] do
 			
-			-- create
-			if(level.bricks[yi][xi] == 1) then
+
+
+			-- create brick?
+			if(level.bricks[yi][xi] > 0) then
 
 				local xPos
 				local yPos
@@ -103,20 +210,27 @@ local function CreateBricksFromTable(level)
 				local brickData = 
 		  	{
 			 		x = xPos,
-					y = yPos
+					y = yPos,
+					brickType = level.bricks[yi][xi],
+					index = activeBricksCount+1
 				}
 
-				bricks[xi + (yi-1) * level.columns] = CreateBrick(brickData)
-
+				
+				--bricks[xi + (yi-1) * level.columns] = CreateBrick(brickData)
+				bricks[activeBricksCount+1] = CreateBrick(brickData)
+			
 				activeBricksCount = activeBricksCount + 1
 
 			end
 
 		end 
+
 	end
 	--]]
 	
 	totalBricks = activeBricksCount
+	totalBricksAtStart = activeBricksCount
+
 
 end
 
@@ -157,6 +271,20 @@ end
 -- stuff run on enterFrame event
 function Bricks:Update()
 
+	-- update individual bricks
+	if(totalBricksAtStart > 0) then
+		for i=1, totalBricksAtStart do
+			-- brick exists?
+			if(bricks[i]) then
+				bricks[i]:Update()
+			end 
+		end 
+	end
+
+	-- create brick rubble
+	CreateBrickRubble()
+
+	-- is level over?
 	if(totalBricksBroken == totalBricks) then
 		Events.allBricksBroken:Dispatch()
 	end
@@ -183,7 +311,7 @@ Events.allBricksBroken:AddObject(Bricks)
 CreateAllBricks(Levels.currentLevel)
 
 -- print total at start of game
-print("Bricks: " .. totalBricks) 
+--print("Bricks: " .. totalBricks) 
 
 
 return Bricks

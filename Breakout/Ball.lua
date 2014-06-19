@@ -9,15 +9,44 @@
 local Events = require("Events")
 local physics = require("physics")
 local sound = require("Sound")
-local spriteSheet = require("SpriteSheet")
+local Sprites = require("Sprites")
+local Func = require("Func")
+
+
+-- sprites
 local spriteData = 
 {
-	name = "idle",
-	frames = {2}
+	{
+		name = "ball",
+		frames = {Sprites.ball}
+	},
+
+	{
+		name = "ball2",
+		frames = {Sprites.ball2}
+	},
+
+	{
+		name = "ball3",
+		frames = {Sprites.ball3}
+	},
+
+	{
+		name = "ball4",
+		frames = {Sprites.ball4}
+	},
+
+	{
+		name = "ball5",
+		frames = {Sprites.ball5}
+	},
+
+
 }
 
+
 -- create object
-local ball = display.newSprite( spriteSheet, spriteData )
+local ball = display.newSprite( Sprites.spriteSheet, spriteData )
 
 -- variables
 ball.name = "ball"
@@ -28,6 +57,22 @@ physics.addBody( ball, {radius=8, density=3, friction=0.5, bounce=1})
 -- pos 
 ball.x = display.contentCenterX
 ball.y = display.contentCenterY
+
+
+----------------
+-- Functions
+----------------
+
+-- gather animations into a table for later use
+function ball:CreateAnimationTable()
+
+	self.animations = {}
+
+	for i=1, #spriteData do
+		self.animations[#self.animations + 1] = spriteData[i].name
+	end 
+
+end 
 
 -------------------------------------------------
 -- Collision
@@ -71,13 +116,17 @@ function ball:collision(event)
 	-- w/ brick
 	if(event.other.name == "brick") then
 
-		-- destroy brick
-		event.other.Break()
+		if(event.other.brickType == 1) then
+			-- destroy brick
+			event.other:Break()
 
-		-- reduce speed
-		local velocity = {}
-		velocity.x, velocity.y = self:getLinearVelocity( )
-		self:setLinearVelocity( velocity.x * 0.5, velocity.y * 0.5 )
+			-- reduce speed of ball
+			local velocity = {}
+			velocity.x, velocity.y = self:getLinearVelocity( )
+			self:setLinearVelocity( velocity.x * 0.5, velocity.y * 0.5 )
+	
+		end 
+
 		
 		-- ball reacts to collision
 
@@ -90,11 +139,25 @@ ball:addEventListener( "collision", ball )
 
 -- move ball back to starting position
 function ball:ResetBall()
+
+	-- need to add a button for resetting the ball
+
+
+	-- set ball to random sprite
+	
+	self:setSequence( Func:ChooseRandomlyFrom(self.animations) )
+
+
 	self.x = display.contentCenterX
 	self.y = display.contentCenterY
 	self:setLinearVelocity( 0, 0 )
 	self.angularVelocity = self.angularVelocity * 0.1
 	self.rotation = 0
+
+	local size = Func:ChooseRandomlyFrom{1, 2}
+	ball.xScale = size
+	ball.yScale = size
+
 end
 
 -- ball falls out of play
@@ -120,9 +183,16 @@ end
 Events.allBricksBroken:AddObject(ball)
 
 
+----------------------
+-- Run on require
+----------------------
 
+-- animation table
+ball:CreateAnimationTable()
 
 -- make ball a little bigger so it overlaps on collision a tiny bit
-ball:scale(1.5,1.5)
+ball.xScale = 1.5
+ball.yScale = 1.5
+
 
 return ball
