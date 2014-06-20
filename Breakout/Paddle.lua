@@ -18,7 +18,7 @@ local spriteData =
 local paddle = display.newSprite( Sprites.spriteSheet, spriteData )
 
 -- set physics
-physics.addBody( paddle, "static", {friction=0.5, bounce=1})
+physics.addBody( paddle, "static", {friction=0.5, bounce=1, filter = {groupIndex = -1} })
 
 ---------------------
 -- variables

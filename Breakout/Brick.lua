@@ -27,9 +27,43 @@ tempBrick:removeSelf( )
 -- rubble
 local rubbleSpriteData =
 {
-	name = "idle",
-	frames = {Sprites.rubble1}
+	{
+		name = "rubble1",
+		frames = {Sprites.rubble1}
+	},
+
+	{
+		name = "rubble2",
+		frames = {Sprites.rubble2}
+	},
+
+	{
+		name = "rubble3",
+		frames = {Sprites.rubble3}
+	},
+
+	{
+		name = "rubble4",
+		frames = {Sprites.rubble4}
+	},
+
+	{
+		name = "rubble5",
+		frames = {Sprites.rubble5}
+	},
+
 }
+
+local rubbleAnimations = {}
+local function RubbleAnimationTable()
+
+	for i=1, #rubbleSpriteData do
+		rubbleAnimations[#rubbleAnimations + 1] = rubbleSpriteData[i].name
+	end 
+
+end 
+
+RubbleAnimationTable()
 
 ---------------------------------------------------
 -- Level
@@ -70,10 +104,12 @@ local function CreateBrickRubble()
 
 			local obj = display.newSprite(Sprites.spriteSheet, rubbleSpriteData)
 
+			obj:setSequence( Func:ChooseRandomlyFrom(rubbleAnimations) )
+
 			obj.x = makeRubbleLater[i].x + makeRubbleLater[i].width * 0.5
 			obj.y = makeRubbleLater[i].y + makeRubbleLater[i].height * 0.5
 
-			physics.addBody( obj, {friction=0.2, bounce=0.5} )
+			physics.addBody( obj, {friction=0.2, bounce=0.5, filter = {groupIndex = -1} } )
 
 			local velocity = {}
 			local v = 1000
@@ -114,8 +150,6 @@ local function CreateBrick(data)
 	-- Functions
 	-----------------
 
-	
-
 	function obj:Break()
 	
 		totalBricksBroken =  totalBricksBroken + 1
@@ -152,9 +186,9 @@ local function CreateBrick(data)
 	-- brick type determines physics type -- for now
 	-- need to make a table of brick types --> :P
 	if(obj.brickType == 1) then
-		physics.addBody( obj, "static", {friction=0.5, bounce=0.5} )
+		physics.addBody( obj, "static", {friction=0.5, bounce=0.5 } )
 	elseif(obj.brickType == 2) then
-		physics.addBody( obj, {friction=0.2, bounce=0.5, density = 1} )
+		physics.addBody( obj, {friction=0.2, bounce=0.5, density = 1 } )
 	end 
 
 	return obj
