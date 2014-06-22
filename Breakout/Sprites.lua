@@ -90,14 +90,11 @@ Sprites.names = {}
 Sprites.data = {}
 Sprites.data.paddle = {x=0, y=0, width=64, height=16} 
 
---[[
 Sprites.data.ball = {x=64, y=0, width=16, height=16} 
 Sprites.data.ball2 = {x=80, y=0, width=16, height=16}
 Sprites.data.ball3 = {x=96, y=0, width=16, height=16}
 Sprites.data.ball4 = {x=112, y=0, width=16, height=16}
 Sprites.data.ball5 = {x=128, y=0, width=16, height=16}
---]]
-
 
 Sprites.data.brick = {x=0, y=16, width=32, height=16}
 Sprites.data.brick2 = {x=0, y=32, width=32, height=16}
@@ -157,51 +154,19 @@ MakeSprites
 	}
 }
 
-print(Sprites.ball)
-print(sheetFrames[11].x)
---]]
 
---print(Sprites.ball)
---print(Sprites.ball2)
---print(Sprites.ball3)
-
-
---[[
-local sheetFrames = 
-{
-	-- paddle = 1
-	MakeFrame(0,0,64,16),
-
-	-- ball = 2
-	MakeFrame(64,0,16,16),
-
-	-- brick = 3
-	MakeFrame(0,16,32,16),
-
-	-- rubble1 = 4
-	MakeFrame(32,16,8,8),
-
-	-- wall = 5
-	MakeFrame(72,24,8,8),
-
-	-- ceiling = 6
-	MakeFrame(64,24,8,8)
-}
---]]
-
-
--- create sheet
+-------------------
+-- Create sheet
+-------------------
 
 local sheetOptions =
 {
 	frames = sheetFrames
 }
 
-
 Sprites.spriteSheet = graphics.newImageSheet( "breakoutGraphics.png", sheetOptions)
 Sprites.spriteSheetData = {}
 Sprites.spriteSheetData.width = 256
 Sprites.spriteSheetData.height = 256
-
 
 return Sprites
