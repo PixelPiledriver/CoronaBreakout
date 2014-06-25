@@ -41,12 +41,41 @@ local spriteData =
 		frames = {Sprites.ball5}
 	},
 
+	{
+		name = "ball6",
+		frames = {Sprites.ball6}
+	},
 
+	{
+		name = "ball7",
+		frames = {Sprites.ball7}
+	},
+
+	{
+		name = "ball8",
+		frames = {Sprites.ball8}
+	},
+
+	{
+		name = "coolBall",
+		frames = {Sprites.ball9, Sprites.ball10, Sprites.ball11, Sprites.ball12},
+		time = 200	
+	}
 }
-
 
 -- create object
 local ball = display.newSprite( Sprites.spriteSheet, spriteData )
+
+-- animation table
+ball.animations = {}
+Sprites:CreateAnimationTable
+{
+	spriteData = spriteData,
+	animationTable = ball.animations
+}
+
+-- init sprite
+ball:play()
 
 -- variables
 ball.name = "ball"
@@ -63,20 +92,7 @@ ball.y = display.contentCenterY
 -- Functions
 ----------------
 
--- gather animations into a table for later use
-function ball:CreateAnimationTable()
-
-	self.animations = {}
-
-	for i=1, #spriteData do
-		self.animations[#self.animations + 1] = spriteData[i].name
-	end 
-
-end 
-
--------------------------------------------------
--- Collision
--------------------------------------------------
+-- Collisions with other objects
 function ball:collision(event)
 
 	-- w/ wall
@@ -145,8 +161,8 @@ function ball:ResetBall()
 
 	-- set ball to random sprite
 	
-	self:setSequence( Func:ChooseRandomlyFrom(self.animations) )
-
+	self:setSequence(Func:ChooseRandomlyFrom(self.animations))
+	self:play()
 
 	self.x = display.contentCenterX
 	self.y = display.contentCenterY
@@ -187,12 +203,17 @@ Events.allBricksBroken:AddObject(ball)
 -- Run on require
 ----------------------
 
--- animation table
-ball:CreateAnimationTable()
-
 -- make ball a little bigger so it overlaps on collision a tiny bit
 ball.xScale = 1.5
 ball.yScale = 1.5
 
 
 return ball
+
+
+
+
+-- Notes
+------------------------
+
+-- need to test if ball gets stuck and reset it

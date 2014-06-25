@@ -1,11 +1,18 @@
 
 local Sprites = {}
 
-
-
 ----------------
 -- Functions
 ----------------
+
+function Sprites:CreateAnimationTable(data)
+
+	print(data.spriteData)
+	for i=1, #data.spriteData do
+		data.animationTable[#data.animationTable + 1] = data.spriteData[i].name
+	end 
+end 
+
 
 -- returns a table to be used as frame data for 'complex' spritesheet
 local function MakeFrame(_x, _y, _width, _height)
@@ -53,6 +60,16 @@ local function MakeSprites(data)
 
 	local vertical = data.vertical or false
 
+
+	-- use bundle?
+	--create bundle if it doesnt exist
+	if(data.bundle) then
+		if(Sprites[data.bundle] == nil) then
+			Sprites[data.bundle] = {}
+		end
+	end
+
+	-- create sprite data for each name given
 	for i=1, #data.names do
 
 		local x
@@ -66,6 +83,7 @@ local function MakeSprites(data)
 			y = data.y
 		end 
 
+		-- create the sprite data
 		Sprites.data[data.names[i]] =
 		{
 			x = x,
@@ -74,7 +92,18 @@ local function MakeSprites(data)
 			height = data.height
 		}
 
+		-- add the sprite data as frame data to the sprite table
 		MakeFrameToTable{t = data.t, name = data.names[i] }
+
+		-- if a bundle is specified add the sprite
+		-- to the existing group of sprites
+		if(data.bundle) then
+			Sprites[data.bundle][#Sprites[data.bundle]+1] = data.names[i]
+			--{ 
+				--name = data.names[i],
+				--value = Sprites[data.names[i]],
+			--}
+		end 
 
 	end 
 
@@ -84,63 +113,67 @@ end
 -- Create Frames
 ---------------------
 
-
 -- sprite data
 Sprites.names = {}
 Sprites.data = {}
-Sprites.data.paddle = {x=0, y=0, width=64, height=16} 
+local sheetFrames = {}
 
-Sprites.data.ball = {x=64, y=0, width=16, height=16} 
-Sprites.data.ball2 = {x=80, y=0, width=16, height=16}
-Sprites.data.ball3 = {x=96, y=0, width=16, height=16}
-Sprites.data.ball4 = {x=112, y=0, width=16, height=16}
-Sprites.data.ball5 = {x=128, y=0, width=16, height=16}
+-- create all sprites from sheet
+-- made in groups with tables
 
-Sprites.data.brick = {x=0, y=16, width=32, height=16}
-Sprites.data.brick2 = {x=0, y=32, width=32, height=16}
-Sprites.data.brick3 = {x=0, y=48, width=32, height=16}
-
-Sprites.data.rubble1 = {x=32, y=16, width=8, height=8} 
-Sprites.data.rubble2 = {x=40, y=16, width=8, height=8}
-Sprites.data.rubble3 = {x=48, y=16, width=8, height=8}
-Sprites.data.rubble4 = {x=56, y=16, width=8, height=8}
-Sprites.data.rubble5 = {x=64, y=16, width=8, height=8}
-
-Sprites.data.wall = {x=72, y=24, width=8, height=8}
-Sprites.data.ceiling = {x=64, y=24, width=8, height=8} 
-	
-
-
--- frames
-
-local sheetFrames = 
+MakeSprites
 {
-	MakeFrameFromData("paddle"),
-
-	--[[
-	MakeFrameFromData("ball"),
-	MakeFrameFromData("ball2"),
-	MakeFrameFromData("ball3"),
-	MakeFrameFromData("ball4"),
-	MakeFrameFromData("ball5"),
-	--]]
-
-	MakeFrameFromData("brick"),
-	MakeFrameFromData("brick2"),
-	MakeFrameFromData("brick3"),
-
-	MakeFrameFromData("rubble1"),
-	MakeFrameFromData("rubble2"),
-	MakeFrameFromData("rubble3"),
-	MakeFrameFromData("rubble4"),
-	MakeFrameFromData("rubble5"),
-
-	MakeFrameFromData("wall"),
-	MakeFrameFromData("ceiling")
+	t = sheetFrames,
+	x = 0,
+	y = 0,
+	width = 64,
+	height = 16,
+	names = 
+	{
+		"paddle"
+	}
 }
 
-print(#sheetFrames)
----[[
+MakeSprites
+{
+	t = sheetFrames,
+	x = 64,
+	y = 24,
+	width = 8,
+	height = 8,
+	names =
+	{
+		"ceiling", "wall", "wall2"
+	}
+}
+
+MakeSprites
+{
+	t = sheetFrames,
+	x = 32,
+	y = 16,
+	width = 8,
+	height = 8,
+	names =
+	{
+		"rubble1", "rubble2", "rubble3", "rubble4", "rubble5"
+	}
+}
+
+MakeSprites
+{
+	vertical = true,
+	t = sheetFrames,
+	x = 0,
+	y = 16,
+	width = 32,
+	height = 16,
+	names = 
+	{
+		"brick", "brick2", "brick3"
+	}
+}
+
 MakeSprites
 {
 	t = sheetFrames,
@@ -150,9 +183,18 @@ MakeSprites
 	height = 16,
 	names =
 	{
-		"ball", "ball2", "ball3", "ball4", "ball5"
-	}
+		"ball", "ball2", "ball3", 
+		"ball4", "ball5", "ball6", 
+		"ball7", "ball8", 
+		"ball9", "ball10", "ball11", "ball12"
+	},
+
+	-- if you pass a bundle name it
+	-- will group all of the sprites in this function call
+	-- into a single ordered table
+	bundle = "balls"
 }
+
 
 
 -------------------

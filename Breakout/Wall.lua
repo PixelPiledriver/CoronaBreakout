@@ -6,7 +6,7 @@ local Sprites = require("Sprites")
 local wallSprite =
 {
 	name = "idle",
-	frames = {Sprites.wall}
+	frames = {Sprites.wall2}
 }
 
 local ceilingSprite =

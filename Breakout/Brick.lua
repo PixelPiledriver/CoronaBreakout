@@ -8,14 +8,36 @@ local Sprites = require("Sprites")
 local Func = require("Func")
 
 
-local spriteData = 
+local brickSpriteData = 
 {
-	name = "idle",
-	frames = {Sprites.brick}
+	{
+		name = "brick",
+		frames = {Sprites.brick}
+	},
+
+	{
+		name = "brick2",
+		frames = {Sprites.brick2}
+	},
+
+	{
+		name = "brick3",
+		frames = {Sprites.brick3}
+	},
+
+}
+
+-- animation table
+local brickAnimations = {}
+
+Sprites:CreateAnimationTable
+{
+	spriteData = brickSpriteData,
+	animationTable = brickAnimations
 }
 
 -- get size from temp object for later use
-local tempBrick = display.newSprite( Sprites.spriteSheet, spriteData )
+local tempBrick = display.newSprite( Sprites.spriteSheet, brickSpriteData )
 local brickSize =
 {
 	width = tempBrick.width, 
@@ -24,7 +46,10 @@ local brickSize =
 tempBrick:removeSelf( )
 
 
--- rubble
+----------------
+-- Rubble -- needs to be moved to its own file
+----------------
+
 local rubbleSpriteData =
 {
 	{
@@ -55,15 +80,12 @@ local rubbleSpriteData =
 }
 
 local rubbleAnimations = {}
-local function RubbleAnimationTable()
+Sprites:CreateAnimationTable
+{
+	spriteData = rubbleSpriteData,
+	animationTable = rubbleAnimations
+}
 
-	for i=1, #rubbleSpriteData do
-		rubbleAnimations[#rubbleAnimations + 1] = rubbleSpriteData[i].name
-	end 
-
-end 
-
-RubbleAnimationTable()
 
 ---------------------------------------------------
 -- Level
@@ -133,10 +155,10 @@ end
 local function CreateBrick(data)
 
 	-- random brick sprite
-	spriteData.frames = { Func:ChooseRandomlyFrom{Sprites.brick, Sprites.brick2, Sprites.brick3} }
 
-
-	local obj = display.newSprite( Sprites.spriteSheet, spriteData )
+	local obj = display.newSprite( Sprites.spriteSheet, brickSpriteData )
+	obj:setSequence(Func:ChooseRandomlyFrom(brickAnimations))
+	obj:play()
 
 	obj.name = "brick"
 	obj.x = data.x or display.contentCenterX
